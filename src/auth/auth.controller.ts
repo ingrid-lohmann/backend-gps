@@ -1,6 +1,16 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Get,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth') // Garante o prefixo /auth
 export class AuthController {
@@ -15,5 +25,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async signIn(@Body() signInDto: Record<string, any>) {
     return this.authService.signIn(signInDto.email, signInDto.password);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('userData')
+  getProfile(@Request() req) {
+    return req.user;
   }
 }
